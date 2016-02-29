@@ -1,14 +1,18 @@
 {
-  "iso_url": "/home/jeqo/iso/ubuntu-14.04.3-server-amd64.iso",
-  "iso_checksum": "a3b345908a826e262f4ea1afeb357fd09ec0558cf34e6c9112cead4bb55ccdfb",
-  "iso_checksum_type": "sha256",
-
-  "headless": "false",
+  "image_name": "ansible-ubuntu14",
+  
+  "virtualbox_iso_url": "/home/jeqo/iso/ubuntu-14.04.3-server-amd64.iso",
+  "virtualbox_iso_checksum": "a3b345908a826e262f4ea1afeb357fd09ec0558cf34e6c9112cead4bb55ccdfb",
+  "virtualbox_iso_checksum_type": "sha256",
+  "virtualbox_output_directory": "build",
+  "virtualbox_headless": "false",
 
   "aws_source_ami": "ami-fce3c696",
 
   "docker_user": "jeqo",
   "docker_source_image": "ubuntu:14.04.3",
+
+  "vagrant_box_output": "build/ansible-ubuntu14.box",
 
   "atlas_user": "jeqo"
 }

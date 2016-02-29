@@ -1,16 +1,14 @@
 {
   "variables": {
-    "name": "ansible-ubuntu14",
+    "image_name": "ansible-ubuntu14",
 
-    "headless": "false",
+    "virtualbox_headless": "false",
 
-    "iso_url": "iso/ubuntu-14.04.3-server-amd64.iso",
-    "iso_checksum": "",
-    "iso_checksum_type": "sha256",
+    "virtualbox_iso_url": "iso/ubuntu-14.04.3-server-amd64.iso",
+    "virtualbox_iso_checksum": "",
+    "virtualbox_iso_checksum_type": "sha256",
 
     "preseed_path": "ubuntu-14.04/preseed.cfg",
-
-    "user_home": "{{env `HOME`}}",
 
     "docker_user": "",
     "docker_source_image": "",
@@ -22,7 +20,7 @@
     "aws_secret_key": "{{env `ÀWS_SECRET_KEY`}}",
     "aws_source_ami": "ami-fce3c696",
 
-    "version": "15.10",
+    "version": "14.04",
 
     "timestamp": "{{isotime \"20060102150405\"}}"
   },
@@ -65,14 +63,14 @@
 
       "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
       "guest_os_type": "Ubuntu_64",
-      "headless": "{{ user `headless` }}",
+      "headless": "{{ user `virtualbox_headless` }}",
 
       "http_directory": "http",
-      "iso_url": "{{user `iso_url`}}",
-      "iso_checksum": "{{user `iso_checksum`}}",
-      "iso_checksum_type": "{{user `iso_checksum_type`}}",
+      "iso_url": "{{user `virtualbox_iso_url`}}",
+      "iso_checksum": "{{user `virtualbox_iso_checksum`}}",
+      "iso_checksum_type": "{{user `virtualbox_iso_checksum_type`}}",
 
-      "output_directory": "{{user `user_home`}}/boxes/{{user `atlas_user`}}/{{user `name`}}",
+      "output_directory": "{{user `virtualbox_output_directory`}}",
 
       "shutdown_command": "echo 'vagrant' | sudo -S shutdown -P now",
 
@@ -176,7 +174,7 @@
 
         "token": "{{user `atlas_token`}}",
 
-        "artifact": "{{user `atlas_user`}}/{{user `name`}}",
+        "artifact": "{{user `atlas_user`}}/{{user `image_name`}}",
         "artifact_type": "amazon.image",
         "metadata": {
           "created_at": "{{timestamp}}",
@@ -189,25 +187,12 @@
 
         "token": "{{user `atlas_token`}}",
 
-        "artifact": "{{user `atlas_user`}}/{{user `name`}}",
+        "artifact": "{{user `atlas_user`}}/{{user `image_name`}}",
         "artifact_type": "docker.image",
         "metadata": {
           "created_at": "{{timestamp}}",
           "version": "{{user `version`}}.{{user `timestamp`}}",
-          "repository": "{{user `docker_user`}}/{{user `name`}}"
-        }
-      }, {
-        "type": "atlas",
-
-        "only": ["virtualbox"],
-
-        "token": "{{user `atlas_token`}}",
-
-        "artifact": "{{user `atlas_user`}}/{{user `name`}}",
-        "artifact_type": "virtualbox.image",
-        "metadata": {
-          "created_at": "{{timestamp}}",
-          "version": "{{user `version`}}.{{user `timestamp`}}"
+          "repository": "{{user `docker_user`}}/{{user `image_name`}}"
         }
       }
     ],
@@ -217,7 +202,7 @@
 
         "only": ["virtualbox"],
 
-        "output": "{{user `user_home`}}/boxes/virtualbox/{{user `atlas_user`}}/{{user `name`}}/{{user `name`}}.box",
+        "output": "{{user `vagrant_box_output`}}",
         "compression_level": 9,
         "keep_input_artifact": true
       },
@@ -228,7 +213,7 @@
 
         "token": "{{user `atlas_token`}}",
 
-        "artifact": "{{user `atlas_user`}}/{{user `name`}}",
+        "artifact": "{{user `atlas_user`}}/{{user `image_name`}}",
         "artifact_type": "vagrant.box",
         "metadata": {
           "created_at": "{{timestamp}}",
@@ -243,7 +228,7 @@
 
         "only": ["docker"],
 
-        "repository": "{{user `docker_user`}}/{{user `name`}}",
+        "repository": "{{user `docker_user`}}/{{user `image_name`}}",
         "tag": "{{user `version`}}.{{user `timestamp`}}"
       },
       {
@@ -251,7 +236,7 @@
 
         "only": ["docker"],
 
-        "repository": "{{user `docker_user`}}/{{user `name`}}",
+        "repository": "{{user `docker_user`}}/{{user `image_name`}}",
         "tag": "{{user `version`}}",
         "force": true
       },
@@ -260,7 +245,7 @@
 
         "only": ["docker"],
 
-        "repository": "{{user `docker_user`}}/{{user `name`}}",
+        "repository": "{{user `docker_user`}}/{{user `image_name`}}",
         "tag": "latest",
         "force": true
       },
@@ -270,15 +255,5 @@
         "only": ["docker"]
       }
     ]
-  ],
-
-  "push": {
-    "name": "{{user `atlas_user`}}/{{user `name`}}",
-    "token": "{{user `atlas_token`}}",
-    "include": [
-      "http/",
-      "scripts/"
-    ],
-    "vcs": false
-  }
+  ]
 }

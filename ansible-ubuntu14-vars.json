@@ -1,6 +1,6 @@
 {
   "image_name": "ansible-ubuntu14",
-  
+
   "virtualbox_iso_url": "/home/jeqo/iso/ubuntu-14.04.3-server-amd64.iso",
   "virtualbox_iso_checksum": "a3b345908a826e262f4ea1afeb357fd09ec0558cf34e6c9112cead4bb55ccdfb",
   "virtualbox_iso_checksum_type": "sha256",
@@ -9,10 +9,10 @@
 
   "aws_source_ami": "ami-fce3c696",
 
-  "docker_user": "jeqo",
+  "docker_user": "syscomiddleware",
   "docker_source_image": "ubuntu:14.04.3",
 
   "vagrant_box_output": "build/ansible-ubuntu14.box",
 
-  "atlas_user": "jeqo"
+  "atlas_user": "syscomiddleware"
 }

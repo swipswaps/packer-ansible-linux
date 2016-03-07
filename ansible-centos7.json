@@ -1,28 +1,30 @@
 {
   "variables": {
-    "name": "ansible-centos7",
-    "version": "7",
+    "image_name": "ansible-centos7",
 
-    "iso_url": "iso/CentOS-7-x86_64-DVD-1511.iso",
-    "iso_checksum": "",
-    "iso_checksum_type": "sha256",
-
-    "headless": "false",
-
-    "ks_path": "centos-7.1/ks.cfg",
-
-    "user_home": "{{env `HOME`}}",
+    "virtualbox_iso_url": "iso/CentOS-7-x86_64-DVD-1511.iso",
+    "virtualbox_iso_checksum": "",
+    "virtualbox_iso_checksum_type": "sha256",
+    "virtualbox_headless": "false",
+    "virtualbox_ks_path": "centos-7.1/ks.cfg",
 
     "docker_user": "",
     "docker_source_image": "",
+    "docker_repository": "",
 
-    "atlas_user": "",
-    "atlas_token": "{{env `ATLAS_TOKEN`}}",
-
-    "aws_access_key": "{{env `AWS_ACCESS_KEY`}}",
-    "aws_secret_key": "{{env `ÀWS_SECRET_KEY`}}",
+    "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "aws_secret_key": "{{env `ÀWS_SECRET_ACCESS_KEY_ID`}}",
     "aws_source_ami": "ami-61bbf104",
+    "aws_ssh_username": "centos",
 
+    "vagrant_virtualbox_output": "build/ansible-centos7.box",
+
+    "atlas_token": "{{env `ATLAS_TOKEN`}}",
+    "atlas_aws_artifact": "syscomiddleware/ansible-centos7",
+    "atlas_docker_artifact": "syscomiddleware/ansible-centos7",
+    "atlas_vagrant_artifact": "syscomiddleware/ansible-centos7",
+
+    "version": "7.1",
     "timestamp": "{{isotime \"20060102150405\"}}"
   },
 
@@ -31,22 +33,22 @@
       "name": "virtualbox",
       "type": "virtualbox-iso",
 
-      "vm_name": "{{user `name`}}",
-      "output_directory": "{{user `user_home`}}/boxes/{{user `atlas_user`}}/{{user `name`}}",
+      "vm_name": "{{user `image_name`}}",
+      "output_directory": "{{user `virtualbox_output_directory`}}",
       "virtualbox_version_file": ".vbox_version",
-      "headless": "{{user `headless`}}",
+      "headless": "{{user `virtualbox_headless`}}",
 
       "guest_os_type": "RedHat_64",
 
       "hard_drive_interface": "sata",
       "disk_size": "80000",
 
-      "iso_url": "{{user `iso_url`}}",
-      "iso_checksum": "{{user `iso_checksum`}}",
-      "iso_checksum_type": "{{user `iso_checksum_type`}}",
+      "iso_url": "{{user `virtualbox_iso_url`}}",
+      "iso_checksum": "{{user `virtualbox_iso_checksum`}}",
+      "iso_checksum_type": "{{user `virtualbox_iso_checksum_type`}}",
 
       "boot_command": [
-        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{user `ks_path`}}<enter><wait>"
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{user `virtualbox_ks_path`}}<enter><wait>"
       ],
       "boot_wait": "12s",
 
@@ -83,8 +85,8 @@
       "region": "us-east-1",
       "source_ami": "{{user `aws_source_ami`}}",
       "instance_type": "t2.micro",
-      "ssh_username": "centos",
-      "ami_name": "{{user `name`}} {{timestamp}}",
+      "ssh_username": "{{user `aws_ssh_username`}}",
+      "ami_name": "{{user `image_name`}} {{timestamp}}",
 
       "ssh_pty" : true
     }
@@ -136,6 +138,19 @@
     },
     {
       "type": "shell",
+
+      "only": ["aws"],
+
+      "inline": [
+        "dd if=/dev/zero of=/var/swap.img bs=1M count=2048",
+  			"mkswap /var/swap.img",
+  			"swapon /var/swap.img",
+  			"echo \"/var/swap.img  swap       swap    defaults        0 0\" >> /etc/fstab"
+      ],
+      "execute_command": "{{.Vars}} sudo -S -E bash '{{.Path}}'"
+    },
+    {
+      "type": "shell",
       "inline": [
         "rm -rf /var/lib/yum/history/* /tmp/* /var/tmp/*"
       ],
@@ -159,7 +174,7 @@
 
         "token": "{{user `atlas_token`}}",
 
-        "artifact": "{{user `atlas_user`}}/{{user `name`}}",
+        "artifact": "{{user `atlas_aws_artifact`}}",
         "artifact_type": "amazon.image",
         "metadata": {
           "created_at": "{{timestamp}}",
@@ -172,25 +187,12 @@
 
         "token": "{{user `atlas_token`}}",
 
-        "artifact": "{{user `atlas_user`}}/{{user `name`}}",
+        "artifact": "{{user `atlas_docker_image`}}",
         "artifact_type": "docker.image",
         "metadata": {
           "created_at": "{{timestamp}}",
           "version": "{{user `version`}}.{{user `timestamp`}}",
-          "repository": "{{user `docker_user`}}/{{user `name`}}"
-        }
-      }, {
-        "type": "atlas",
-
-        "only": ["virtualbox"],
-
-        "token": "{{user `atlas_token`}}",
-
-        "artifact": "{{user `atlas_user`}}/{{user `name`}}",
-        "artifact_type": "virtualbox.image",
-        "metadata": {
-          "created_at": "{{timestamp}}",
-          "version": "{{user `version`}}.{{user `timestamp`}}"
+          "repository": "{{user `docker_repository`}}"
         }
       }
     ],
@@ -200,8 +202,8 @@
 
         "only": ["virtualbox"],
 
-        "output": "{{user `user_home`}}/boxes/virtualbox/{{user `atlas_user`}}/{{user `name`}}/{{user `name`}}.box",
-        "compression_level": 9,
+        "output": "{{user `vagrant_virtualbox_output`}}",
+        "compression_level": 6,
         "keep_input_artifact": true
       },
       {
@@ -211,7 +213,7 @@
 
         "token": "{{user `atlas_token`}}",
 
-        "artifact": "{{user `atlas_user`}}/{{user `name`}}",
+        "artifact": "{{user `atlas_vagrant_artifact`}}",
         "artifact_type": "vagrant.box",
         "metadata": {
           "created_at": "{{timestamp}}",
@@ -226,7 +228,7 @@
 
         "only": ["docker"],
 
-        "repository": "{{user `docker_user`}}/{{user `name`}}",
+        "repository": "{{user `docker_repository`}}",
         "tag": "{{user `version`}}.{{user `timestamp`}}"
       },
       {
@@ -234,7 +236,7 @@
 
         "only": ["docker"],
 
-        "repository": "{{user `docker_user`}}/{{user `name`}}",
+        "repository": "{{user `docker_repository`}}",
         "tag": "{{user `version`}}",
         "force": true
       },
@@ -243,7 +245,7 @@
 
         "only": ["docker"],
 
-        "repository": "{{user `docker_user`}}/{{user `name`}}",
+        "repository": "{{user `docker_repository`}}",
         "tag": "latest",
         "force": true
       },
@@ -253,15 +255,5 @@
         "only": ["docker"]
       }
     ]
-  ],
-
-  "push": {
-    "name": "{{user `atlas_user`}}/{{user `name`}}",
-    "token": "{{user `atlas_token`}}",
-    "include": [
-      "http/",
-      "scripts/"
-    ],
-    "vcs": false
-  }
+  ]
 }

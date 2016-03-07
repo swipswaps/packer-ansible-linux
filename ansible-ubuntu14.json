@@ -30,7 +30,7 @@
       "name": "virtualbox",
       "type": "virtualbox-iso",
 
-      "vm_name": "{{user `name`}}",
+      "vm_name": "{{user `image_name`}}",
 
       "boot_command": [
         "<esc><wait>",
@@ -102,7 +102,7 @@
       "source_ami": "{{user `aws_source_ami`}}",
       "instance_type": "t2.micro",
       "ssh_username": "ubuntu",
-      "ami_name": "{{user `name`}} {{timestamp}}",
+      "ami_name": "{{user `image_name`}} {{timestamp}}",
 
       "ssh_pty" : true
     }

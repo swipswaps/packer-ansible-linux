@@ -1,14 +1,21 @@
 {
-  "iso_url": "/home/jeqo/iso/CentOS-7-x86_64-DVD-1511.iso",
-  "iso_checksum": "907e5755f824c5848b9c8efbb484f3cd945e93faa024bad6ba875226f9683b16",
-  "iso_checksum_type": "sha256",
+  "image_name": "ansible-centos7",
 
-  "headless": "false",
+  "virtualbox_iso_url": "/home/jeqo/iso/CentOS-7-x86_64-DVD-1511.iso",
+  "virtualbox_iso_checksum": "907e5755f824c5848b9c8efbb484f3cd945e93faa024bad6ba875226f9683b16",
+  "virtualbox_iso_checksum_type": "sha256",
+  "virtualbox_headless": "false",
+  "virtualbox_ks_path": "centos-7.1/ks.cfg",
 
-  "aws_source_ami": "ami-61bbf104",
-
-  "docker_user": "jeqo",
   "docker_source_image": "centos:centos7",
+  "docker_repository": "syscomiddleware/ansible-centos7",
 
-  "atlas_user": "jeqo"
+  "aws_source_ami": "ami-6d1c2007",
+  "aws_ssh_username": "centos",
+
+  "vagrant_virtualbox_output": "build/ansible-centos7.box",
+
+  "atlas_aws_artifact": "syscomiddleware/ansible-centos7",
+  "atlas_docker_artifact": "syscomiddleware/ansible-centos7",
+  "atlas_vagrant_artifact": "syscomiddleware/ansible-centos7"
 }
